@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FABRIC</title>
+    <style>
+      #c {
+        /* margin: 20%; */
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="file" id="imageInput" accept="image/*" />
+    <canvas id="c" height="500px" width="1000px">
+      <img src="./Img.jpg" alt="" id="demo" />
+    </canvas>
+    <script src="./fabric.js"></script>
+    <script>
+      var canvas = new fabric.Canvas("c");
+
+      var imgElement = document.getElementById("demo");
+      var imgInstance = new fabric.Image(imgElement, {
+        left: 0,
+        top: 0,
+        opacity: 1,
+      });
+      canvas.add(imgInstance);
+
+      let imgInput = document.getElementById("imageInput");
+      imgInput.addEventListener("change", function (e) {
+        if (e.target.files) {
+          let imageFile = e.target.files[0]; //here we get the image file
+          var reader = new FileReader();
+          reader.readAsDataURL(imageFile);
+          reader.onloadend = function (e) {
+            var imgElement = document.getElementById("demo");
+            imgElement.src = e.target.result;
+            canvas.add(imgInstance);
+        };
+    }
+});
+
+      canvas.on("mouse:wheel", function (opt) {
+        var delta = opt.e.deltaY;
+        var zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > 20) zoom = 20;
+        if (zoom < 0.01) zoom = 0.01;
+        canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+        var vpt = this.viewportTransform;
+        if (zoom < 400 / 1000) {
+          vpt[4] = 200 - (1000 * zoom) / 2;
+          vpt[5] = 200 - (1000 * zoom) / 2;
+        } else {
+          if (vpt[4] >= 0) {
+            vpt[4] = 0;
+          } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
+            vpt[4] = canvas.getWidth() - 1000 * zoom;
+          }
+          if (vpt[5] >= 0) {
+            vpt[5] = 0;
+          } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
+            vpt[5] = canvas.getHeight() - 1000 * zoom;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
