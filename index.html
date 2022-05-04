@@ -14,8 +14,9 @@
   </head>
   <body>
     <input type="file" id="imageInput" accept="image/*" />
-    <canvas id="c" height="500px" width="1000px">
-      <img src="./Img.jpg" alt="" id="demo" />
+    <canvas id="c" height="600px" width="1300px">
+    
+      <img src="./img.jpg" alt="" id="demo" />
     </canvas>
     <script src="./fabric.js"></script>
     <script>
@@ -23,24 +24,38 @@
 
       var imgElement = document.getElementById("demo");
       var imgInstance = new fabric.Image(imgElement, {
-        left: 0,
-        top: 0,
+        
+        left: 0 ,
+        right : 0 ,
         opacity: 1,
       });
       canvas.add(imgInstance);
+      canvas.centerObject(imgInstance);
+      canvas.renderAll();
 
       let imgInput = document.getElementById("imageInput");
       imgInput.addEventListener("change", function (e) {
         if (e.target.files) {
-          let imageFile = e.target.files[0]; //here we get the image file
+          let imageFile = e.target.files[0]; 
           var reader = new FileReader();
           reader.readAsDataURL(imageFile);
           reader.onloadend = function (e) {
             var imgElement = document.getElementById("demo");
             imgElement.src = e.target.result;
             canvas.add(imgInstance);
+            
         };
     }
+
+        function resizeCanvas(){
+          var img = document.getElementById('imageInput'); 
+          var width = img.clientWidth;
+          var height = img.clientHeight;
+
+          var canvas = document.getElementById('canvas'); 
+          canvas.style.width = width;
+          canvas.style.height = height;
+        }
 });
 
       canvas.on("mouse:wheel", function (opt) {
@@ -48,7 +63,8 @@
         var zoom = canvas.getZoom();
         zoom *= 0.999 ** delta;
         if (zoom > 20) zoom = 20;
-        if (zoom < 0.01) zoom = 0.01;
+       
+        if (zoom < 1) zoom = 1;
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
         opt.e.preventDefault();
         opt.e.stopPropagation();
